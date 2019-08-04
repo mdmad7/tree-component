@@ -11,6 +11,26 @@ class Leaf extends Component {
     });
   };
 
+  handleKeyDown = e => {
+    if (e.key === "Enter") {
+      this.props.addToBranch(
+        this.props.branchIndex,
+        this.props.option.id
+          ? { ...this.props.option, name: this.state.leafValue }
+          : this.state.leafValue
+      );
+    }
+  };
+
+  handleBlur = () => {
+    this.props.addToBranch(
+      this.props.branchIndex,
+      this.props.option.id
+        ? { ...this.props.option, name: this.state.leafValue }
+        : this.state.leafValue
+    );
+  };
+
   render() {
     const { branchIndex, option, showBranch } = this.props;
     const { leafValue } = this.state;
@@ -21,7 +41,8 @@ class Leaf extends Component {
           type="text"
           value={leafValue}
           onChange={this.changeLeafValue}
-          // onBlur={() => console.log("i blurred")}
+          onKeyDown={this.handleKeyDown}
+          onBlur={this.handleBlur}
         />
       </div>
     );

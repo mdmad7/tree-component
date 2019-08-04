@@ -20,15 +20,16 @@ class Branch extends Component {
   };
   render() {
     const { branchValue } = this.state;
-    const { options, branchIndex, showBranch } = this.props;
+    const { options, branchIndex, showBranch, addToBranch } = this.props;
     return (
       <div className="es-branch">
         <div className="es-branch_header" />
         <div className="es-branch_body">
           {options.map(option => (
             <Leaf
-              key={option.key}
+              key={option.id}
               showBranch={showBranch}
+              addToBranch={addToBranch}
               branchIndex={branchIndex}
               option={option}
             />

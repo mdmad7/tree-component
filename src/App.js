@@ -12,39 +12,47 @@ class App extends Component {
   }
 
   showBranch = (branchIndex, branch) => {
-    console.log(branchIndex);
     let newBranches = [...this.state.branches];
     newBranches.splice(branchIndex, 1, branch);
 
-    this.setState(
-      {
-        branches: newBranches.slice(0, branchIndex + 1)
-      },
-      () => console.log(this.state.branches)
-    );
+    this.setState({
+      branches: newBranches.slice(0, branchIndex + 1)
+    });
   };
 
   addToBranch = (branchIndex, value) => {
     if (branchIndex === 0) {
       this.setState({
-        options: [
-          ...this.state.options,
-          { id: Date.now(), key: value, name: value, values: [] }
-        ]
+        options:
+          typeof value === "object"
+            ? this.state.options.map(opt => (opt.id === value.id ? value : opt))
+            : [
+                ...this.state.options,
+                { id: Date.now(), key: value, name: value, values: [] }
+              ]
       });
     } else {
       let activeBranch = this.state.branches[branchIndex - 1];
       let newBranch = {
         ...activeBranch,
-        values: [
-          ...(activeBranch.values || []),
-          { id: Date.now(), key: value, name: value, values: [] }
-        ]
+        values:
+          typeof value === "object"
+            ? (activeBranch.values || []).map(val =>
+                val.id === value.id ? value : val
+              )
+            : [
+                ...(activeBranch.values || []),
+                { id: Date.now(), key: value, name: value, values: [] }
+              ]
       };
+
+      // console.log(newBranch);
 
       let newBranches = [...this.state.branches];
       newBranches.splice(branchIndex - 1, 1, newBranch);
+      // console.log(newBranches);
       let reversedBranches = [...newBranches].reverse();
+      // console.log(reversedBranches);
       let newRootBase = reversedBranches.reduce((acc, cur) => {
         if (!acc["branches"]) acc["branches"] = [];
 
@@ -55,8 +63,8 @@ class App extends Component {
           acc["option"] = { ...cur, values: newVals };
           acc["branches"].push({ ...cur, values: newVals });
         } else {
-          acc["option"] = cur;
-          acc["branches"].push(cur);
+          acc["option"] = typeof value === "object" ? value : cur;
+          acc["branches"].push(typeof value === "object" ? value : cur);
         }
 
         return acc;
@@ -69,8 +77,8 @@ class App extends Component {
           )
         },
         () => {
-          console.log(this.state.branches);
-          console.log(this.state.options);
+          // console.log(this.state.branches);
+          // console.log(this.state.options);
         }
       );
     }
@@ -93,7 +101,7 @@ class App extends Component {
           branches.map((branch, index) => (
             <Branch
               addToBranch={this.addToBranch}
-              key={branch.key}
+              key={branch.id}
               showBranch={this.showBranch}
               options={branch.values || []}
               branchIndex={index + 1}
