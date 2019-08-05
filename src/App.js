@@ -49,7 +49,12 @@ class App extends Component {
               )
             : [
                 ...(activeBranch.values || []),
-                { id: Date.now(), key: value, name: value, values: [] }
+                {
+                  id: `${activeBranch.id}-${Date.now()}`,
+                  key: value,
+                  name: value,
+                  values: []
+                }
               ]
       };
 
