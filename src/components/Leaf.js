@@ -2,7 +2,8 @@ import React, { Component } from "react";
 
 class Leaf extends Component {
   state = {
-    leafValue: this.props.option.name || ""
+    leafValue: this.props.option.name || "",
+    confirm: false
   };
 
   changeLeafValue = e => {
@@ -22,6 +23,12 @@ class Leaf extends Component {
     }
   };
 
+  handleDeleteConfirm = confirm => {
+    this.setState({
+      confirm
+    });
+  };
+
   handleBlur = () => {
     this.props.addToBranch(
       this.props.branchIndex,
@@ -31,11 +38,46 @@ class Leaf extends Component {
     );
   };
 
+  deleteItem = () => {
+    this.props.removeFromBranch(this.props.branchIndex, {
+      ...this.props.option,
+      name: this.state.leafValue
+    });
+  };
+
   render() {
-    const { branchIndex, option, showBranch } = this.props;
-    const { leafValue } = this.state;
+    const { branchIndex, option, showBranch, branches } = this.props;
+    const { leafValue, confirm } = this.state;
     return (
-      <div className="es-leaf" onClick={() => showBranch(branchIndex, option)}>
+      <div
+        className={`es-leaf 
+        ${
+          option &&
+          branches.length > 0 &&
+          branches[branchIndex] &&
+          branches[branchIndex].id === option.id
+            ? "es-leaf_active"
+            : ""
+        }
+        `}
+        onClick={() => showBranch(branchIndex, option)}
+      >
+        {confirm && (
+          <div className="es-leaf_confirm">
+            <p>
+              Delete this value?{" "}
+              <span onClick={() => this.handleDeleteConfirm(false)}>No</span>
+              <span
+                onClick={() => {
+                  this.deleteItem();
+                  this.handleDeleteConfirm(false);
+                }}
+              >
+                Yes
+              </span>{" "}
+            </p>
+          </div>
+        )}
         <input
           className="es-leaf_input"
           type="text"
@@ -44,6 +86,7 @@ class Leaf extends Component {
           onKeyDown={this.handleKeyDown}
           onBlur={this.handleBlur}
         />
+        <button onClick={() => this.handleDeleteConfirm(true)}>Del</button>
       </div>
     );
   }

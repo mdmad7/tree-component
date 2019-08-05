@@ -20,7 +20,14 @@ class Branch extends Component {
   };
   render() {
     const { branchValue } = this.state;
-    const { options, branchIndex, showBranch, addToBranch } = this.props;
+    const {
+      options,
+      branches,
+      branchIndex,
+      showBranch,
+      addToBranch,
+      removeFromBranch
+    } = this.props;
     return (
       <div className="es-branch">
         <div className="es-branch_header" />
@@ -29,8 +36,10 @@ class Branch extends Component {
             <Leaf
               key={option.id}
               showBranch={showBranch}
+              branches={branches}
               addToBranch={addToBranch}
               branchIndex={branchIndex}
+              removeFromBranch={removeFromBranch}
               option={option}
             />
           ))}

@@ -5,7 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  box-sizing: border-box;
+  box-sizing: border-box !important;
 }
 
 .es-tree {
@@ -59,15 +59,56 @@ body {
     background: url(/static/media/arrow-right.f402831b.svg) no-repeat;
     background-size: 10px;
     background-position: 95% 50%;
-    cursor: pointer;
+    // cursor: pointer;
     width: 100%;
+    height: 40px;
+
+    .es-leaf_confirm {
+      display: flex;
+      font-size: 0.85rem;
+      padding-left: 0.5rem;
+      align-items: center;
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      background-color: #eceff1;
+      span {
+        margin: 0 0.2rem;
+        &:hover {
+          cursor: pointer;
+          text-decoration: underline;
+        }
+      }
+    }
+
+    button {
+      height: inherit;
+      border: none;
+      background-color: #eceff1;
+      width: 35px;
+      &:focus {
+        outline: none;
+      }
+      &:hover {
+        cursor: pointer;
+        // box-shadow: ;
+      }
+    }
+  }
+
+  .es-leaf_active {
+    background-color: #2499ef;
+    input {
+      color: white;
+    }
   }
 
   .es-leaf_input {
     background: transparent;
-    padding: 0.8rem 0.3rem;
+    padding: 0.8rem 0rem;
+    padding-left: 0.2rem;
     border: 0;
     margin: 0;
-    width: 100%;
+    width: calc(100% - 39.5px);
   }
 }

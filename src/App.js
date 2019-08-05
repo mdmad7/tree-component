@@ -6,7 +6,7 @@ class App extends Component {
     super(props);
 
     this.state = {
-      options: [],
+      options: JSON.parse(localStorage.getItem("options")) || [],
       branches: []
     };
   }
@@ -22,15 +22,21 @@ class App extends Component {
 
   addToBranch = (branchIndex, value) => {
     if (branchIndex === 0) {
-      this.setState({
-        options:
-          typeof value === "object"
-            ? this.state.options.map(opt => (opt.id === value.id ? value : opt))
-            : [
-                ...this.state.options,
-                { id: Date.now(), key: value, name: value, values: [] }
-              ]
-      });
+      this.setState(
+        {
+          options:
+            typeof value === "object"
+              ? this.state.options.map(opt =>
+                  opt.id === value.id ? value : opt
+                )
+              : [
+                  ...this.state.options,
+                  { id: Date.now(), key: value, name: value, values: [] }
+                ]
+        },
+        () =>
+          localStorage.setItem("options", JSON.stringify(this.state.options))
+      );
     } else {
       let activeBranch = this.state.branches[branchIndex - 1];
       let newBranch = {
@@ -46,13 +52,11 @@ class App extends Component {
               ]
       };
 
-      // console.log(newBranch);
-
       let newBranches = [...this.state.branches];
       newBranches.splice(branchIndex - 1, 1, newBranch);
-      // console.log(newBranches);
+
       let reversedBranches = [...newBranches].reverse();
-      // console.log(reversedBranches);
+
       let newRootBase = reversedBranches.reduce((acc, cur) => {
         if (!acc["branches"]) acc["branches"] = [];
 
@@ -76,9 +80,72 @@ class App extends Component {
             opt.id === newRootBase["option"].id ? newRootBase["option"] : opt
           )
         },
+        () =>
+          localStorage.setItem("options", JSON.stringify(this.state.options))
+      );
+    }
+  };
+
+  removeFromBranch = (branchIndex, value) => {
+    if (branchIndex === 0) {
+      this.setState(
+        state => {
+          return {
+            options: state.options.filter(opt => opt.id !== value.id)
+          };
+        },
         () => {
-          // console.log(this.state.branches);
-          // console.log(this.state.options);
+          this.setState({
+            branches: []
+          });
+          localStorage.setItem("options", JSON.stringify(this.state.options));
+        }
+      );
+    } else {
+      let activeBranch = this.state.branches[branchIndex - 1];
+      let newBranch = {
+        ...activeBranch,
+        values: (activeBranch.values || []).filter(val => val.id !== value.id)
+      };
+
+      let newBranches = this.state.branches.slice();
+      newBranches.splice(branchIndex - 1, 1, newBranch);
+
+      let reversedBranches = newBranches.slice().reverse();
+
+      let newRootBase = reversedBranches.reduce((acc, cur) => {
+        if (!acc["branches"]) acc["branches"] = [];
+
+        if (acc["option"] && value.id !== cur.id) {
+          let newVals = cur["values"].map(val =>
+            val.id === acc["option"].id ? acc["option"] : val
+          );
+          acc["option"] = { ...cur, values: newVals };
+          acc["branches"].push({ ...cur, values: newVals });
+        }
+        if (!acc["option"] && value.id !== cur.id) {
+          acc["option"] = cur;
+          acc["branches"].push(cur);
+        }
+
+        return acc;
+      }, {});
+
+      newRootBase["branches"].reverse();
+
+      this.setState(
+        state => {
+          return {
+            options: state.options.map(opt =>
+              opt.id === newRootBase["option"].id ? newRootBase["option"] : opt
+            )
+          };
+        },
+        () => {
+          this.setState({
+            branches: newRootBase["branches"]
+          });
+          localStorage.setItem("options", JSON.stringify(this.state.options));
         }
       );
     }
@@ -86,6 +153,7 @@ class App extends Component {
 
   render() {
     const { options, branches } = this.state;
+
     return (
       <div className="es-tree">
         {Array.isArray(options) && (
@@ -93,15 +161,19 @@ class App extends Component {
             branchIndex={0}
             showBranch={this.showBranch}
             options={options}
+            branches={branches}
             addToBranch={this.addToBranch}
+            removeFromBranch={this.removeFromBranch}
           />
         )}
         {Array.isArray(options) &&
           branches.length > 0 &&
           branches.map((branch, index) => (
             <Branch
+              removeFromBranch={this.removeFromBranch}
               addToBranch={this.addToBranch}
               key={branch.id}
+              branches={branches}
               showBranch={this.showBranch}
               options={branch.values || []}
               branchIndex={index + 1}
