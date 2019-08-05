@@ -7,7 +7,8 @@ class App extends Component {
 
     this.state = {
       options: JSON.parse(localStorage.getItem("options")) || [],
-      branches: []
+      branches: [],
+      headings: JSON.parse(localStorage.getItem("headings")) || []
     };
   }
 
@@ -151,18 +152,46 @@ class App extends Component {
     }
   };
 
+  createBranchheading = (branchIndex, value) => {
+    if (typeof value === "object") {
+      this.setState(
+        state => {
+          return {
+            headings: state.headings.map(head =>
+              head.id === value.id ? value : head
+            )
+          };
+        },
+        () =>
+          localStorage.setItem("headings", JSON.stringify(this.state.headings))
+      );
+    }
+
+    if (typeof value === "string") {
+      this.setState(
+        state => ({
+          headings: [...state.headings, { id: branchIndex, title: value }]
+        }),
+        () =>
+          localStorage.setItem("headings", JSON.stringify(this.state.headings))
+      );
+    }
+  };
+
   render() {
-    const { options, branches } = this.state;
+    const { options, branches, headings } = this.state;
 
     return (
       <div className="es-tree">
         {Array.isArray(options) && (
           <Branch
             branchIndex={0}
+            heading={headings[0]}
             showBranch={this.showBranch}
             options={options}
             branches={branches}
             addToBranch={this.addToBranch}
+            createBranchheading={this.createBranchheading}
             removeFromBranch={this.removeFromBranch}
           />
         )}
@@ -173,7 +202,9 @@ class App extends Component {
               removeFromBranch={this.removeFromBranch}
               addToBranch={this.addToBranch}
               key={branch.id}
+              heading={headings[index + 1]}
               branches={branches}
+              createBranchheading={this.createBranchheading}
               showBranch={this.showBranch}
               options={branch.values || []}
               branchIndex={index + 1}

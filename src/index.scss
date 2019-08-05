@@ -33,7 +33,12 @@ body {
       position: relative;
       cursor: pointer;
       width: 100%;
+      height: 45px;
       display: flex;
+
+      input {
+        width: 100%;
+      }
     }
 
     .es-branch_body {
