@@ -13,21 +13,36 @@ class App extends Component {
   }
 
   showBranch = (branchIndex, branch) => {
+    let esTree = document.getElementById("es-tree");
+
     let newBranches = [...this.state.branches];
     newBranches.splice(branchIndex, 1, branch);
 
-    this.setState({
-      branches: newBranches.slice(0, branchIndex + 1)
-    });
+    this.setState(
+      {
+        branches: newBranches.slice(0, branchIndex + 1)
+      },
+      () => {
+        esTree.scrollLeft = esTree.scrollWidth;
+      }
+    );
   };
 
-  addToBranch = (branchIndex, value) => {
-    console.log(branchIndex);
+  addToBranch = (branchIndex, value, action) => {
+    let activeDiv = document.getElementsByClassName("es-branch_body");
+
     if (branchIndex === 0) {
-       if (Array.isArray(value)) {
-        return this.setState({
-          options: [...this.state.options, ...value]
-        });
+      if (Array.isArray(value)) {
+        return this.setState(
+          {
+            options: [...this.state.options, ...value]
+          },
+          () => {
+            localStorage.setItem("options", JSON.stringify(this.state.options));
+            activeDiv[0].scrollTop =
+              action !== "blur" && activeDiv[0].scrollHeight;
+          }
+        );
       }
       if (typeof value === "object") {
         return this.setState(
@@ -36,8 +51,11 @@ class App extends Component {
               opt.id === value.id ? value : opt
             )
           },
-          () =>
-            localStorage.setItem("options", JSON.stringify(this.state.options))
+          () => {
+            localStorage.setItem("options", JSON.stringify(this.state.options));
+            activeDiv[0].scrollTop =
+              action !== "blur" && activeDiv[0].scrollHeight;
+          }
         );
       }
 
@@ -49,14 +67,14 @@ class App extends Component {
               { id: Date.now(), key: value, name: value, values: [] }
             ]
           },
-          () =>
-            localStorage.setItem("options", JSON.stringify(this.state.options))
+          () => {
+            localStorage.setItem("options", JSON.stringify(this.state.options));
+            activeDiv[0].scrollTop =
+              action !== "blur" && activeDiv[0].scrollHeight;
+          }
         );
       }
-
-     
     } else {
-      console.log(Array.isArray(value));
       let activeBranch = this.state.branches[branchIndex - 1];
       let newBranch = {
         ...activeBranch,
@@ -92,7 +110,6 @@ class App extends Component {
           acc["option"] = { ...cur, values: newVals };
           acc["branches"].push({ ...cur, values: newVals });
         } else {
-          console.log(cur);
           acc["option"] = Array.isArray(value)
             ? cur
             : typeof value === "object"
@@ -103,12 +120,8 @@ class App extends Component {
           );
         }
 
-        console.log(acc);
-
         return acc;
       }, {});
-
-      console.log(newRootBase);
 
       this.setState(
         {
@@ -117,8 +130,11 @@ class App extends Component {
             opt.id === newRootBase["option"].id ? newRootBase["option"] : opt
           )
         },
-        () =>
-          localStorage.setItem("options", JSON.stringify(this.state.options))
+        () => {
+          localStorage.setItem("options", JSON.stringify(this.state.options));
+          activeDiv[branchIndex].scrollTop =
+            action !== "blur" && activeDiv[branchIndex].scrollHeight;
+        }
       );
     }
   };
@@ -218,7 +234,7 @@ class App extends Component {
     const { options, branches, headings } = this.state;
 
     return (
-      <div className="es-tree">
+      <div id="es-tree" className="es-tree">
         {Array.isArray(options) && (
           <Branch
             branchIndex={0}

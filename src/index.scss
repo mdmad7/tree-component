@@ -16,6 +16,7 @@ body {
   margin-bottom: 50px;
   background: #eceff1;
   overflow: auto;
+  width: 100%;
 
   .es-branch {
     background-color: #fff;
@@ -26,7 +27,7 @@ body {
     flex-direction: column;
     box-shadow: 0 1px 3px rgba(5, 84, 141, 0.12),
       0 1px 2px rgba(5, 84, 141, 0.24);
-    // padding-bottom: 50px;
+    padding-bottom: 40px;
     position: relative;
 
     .es-branch_header {

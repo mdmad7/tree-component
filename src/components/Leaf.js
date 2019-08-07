@@ -34,7 +34,8 @@ class Leaf extends Component {
       this.props.branchIndex,
       this.props.option.id
         ? { ...this.props.option, name: this.state.leafValue }
-        : this.state.leafValue
+        : this.state.leafValue,
+      "blur"
     );
   };
 
