@@ -13,7 +13,7 @@ class Leaf extends Component {
   };
 
   handleKeyDown = e => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && this.state.leafValue.trim() !== "") {
       this.props.addToBranch(
         this.props.branchIndex,
         this.props.option.id
@@ -85,8 +85,14 @@ class Leaf extends Component {
           onChange={this.changeLeafValue}
           onKeyDown={this.handleKeyDown}
           onBlur={this.handleBlur}
+          onFocus={() => showBranch(branchIndex, option)}
         />
-        <button onClick={() => this.handleDeleteConfirm(true)}>Del</button>
+        <button
+          className="es-leaf_btn"
+          onClick={() => this.handleDeleteConfirm(true)}
+        >
+          Del
+        </button>
       </div>
     );
   }

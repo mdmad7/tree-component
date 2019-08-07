@@ -22,40 +22,59 @@ class App extends Component {
   };
 
   addToBranch = (branchIndex, value) => {
+    console.log(branchIndex);
     if (branchIndex === 0) {
-      this.setState(
-        {
-          options:
-            typeof value === "object"
-              ? this.state.options.map(opt =>
-                  opt.id === value.id ? value : opt
-                )
-              : [
-                  ...this.state.options,
-                  { id: Date.now(), key: value, name: value, values: [] }
-                ]
-        },
-        () =>
-          localStorage.setItem("options", JSON.stringify(this.state.options))
-      );
+       if (Array.isArray(value)) {
+        return this.setState({
+          options: [...this.state.options, ...value]
+        });
+      }
+      if (typeof value === "object") {
+        return this.setState(
+          {
+            options: this.state.options.map(opt =>
+              opt.id === value.id ? value : opt
+            )
+          },
+          () =>
+            localStorage.setItem("options", JSON.stringify(this.state.options))
+        );
+      }
+
+      if (typeof value === "string") {
+        return this.setState(
+          {
+            options: [
+              ...this.state.options,
+              { id: Date.now(), key: value, name: value, values: [] }
+            ]
+          },
+          () =>
+            localStorage.setItem("options", JSON.stringify(this.state.options))
+        );
+      }
+
+     
     } else {
+      console.log(Array.isArray(value));
       let activeBranch = this.state.branches[branchIndex - 1];
       let newBranch = {
         ...activeBranch,
-        values:
-          typeof value === "object"
-            ? (activeBranch.values || []).map(val =>
-                val.id === value.id ? value : val
-              )
-            : [
-                ...(activeBranch.values || []),
-                {
-                  id: `${activeBranch.id}-${Date.now()}`,
-                  key: value,
-                  name: value,
-                  values: []
-                }
-              ]
+        values: Array.isArray(value)
+          ? [...(activeBranch.values || []), ...value]
+          : typeof value === "object"
+          ? (activeBranch.values || []).map(val =>
+              val.id === value.id ? value : val
+            )
+          : [
+              ...(activeBranch.values || []),
+              {
+                id: `${activeBranch.id}-${Date.now()}`,
+                key: value,
+                name: value,
+                values: []
+              }
+            ]
       };
 
       let newBranches = [...this.state.branches];
@@ -73,12 +92,24 @@ class App extends Component {
           acc["option"] = { ...cur, values: newVals };
           acc["branches"].push({ ...cur, values: newVals });
         } else {
-          acc["option"] = typeof value === "object" ? value : cur;
-          acc["branches"].push(typeof value === "object" ? value : cur);
+          console.log(cur);
+          acc["option"] = Array.isArray(value)
+            ? cur
+            : typeof value === "object"
+            ? value
+            : cur;
+          acc["branches"].push(
+            Array.isArray(value) ? cur : typeof value === "object" ? value : cur
+          );
         }
+
+        console.log(acc);
 
         return acc;
       }, {});
+
+      console.log(newRootBase);
+
       this.setState(
         {
           branches: [...newRootBase["branches"].reverse()],
