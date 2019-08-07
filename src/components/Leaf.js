@@ -2,9 +2,30 @@ import React, { Component } from "react";
 
 class Leaf extends Component {
   state = {
-    leafValue: this.props.option.name || "",
+    leafValue:
+      this.props.option[`${this.props.keyEdit ? "key" : "name"}`] || "",
     confirm: false
   };
+
+  // componentDidMount() {
+  //   console.log("mounted");
+  // }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.keyEdit && prevState.leafValue === nextProps.option.name) {
+      return {
+        leafValue: nextProps.option.key
+      };
+    }
+
+    if (!nextProps.keyEdit && prevState.leafValue !== nextProps.option.name) {
+      return {
+        leafValue: nextProps.option.name
+      };
+    }
+
+    return null;
+  }
 
   changeLeafValue = e => {
     this.setState({
@@ -47,7 +68,7 @@ class Leaf extends Component {
   };
 
   render() {
-    const { branchIndex, option, showBranch, branches } = this.props;
+    const { branchIndex, option, showBranch, branches, keyEdit } = this.props;
     const { leafValue, confirm } = this.state;
     return (
       <div

@@ -8,7 +8,8 @@ class App extends Component {
     this.state = {
       options: JSON.parse(localStorage.getItem("options")) || [],
       branches: [],
-      headings: JSON.parse(localStorage.getItem("headings")) || []
+      headings: JSON.parse(localStorage.getItem("headings")) || [],
+      keyEdit: false
     };
   }
 
@@ -230,39 +231,58 @@ class App extends Component {
     }
   };
 
+  toggleEditKeys = e => {
+    this.setState({
+      keyEdit: e.target.checked
+    });
+  };
+
   render() {
-    const { options, branches, headings } = this.state;
+    const { options, branches, headings, keyEdit } = this.state;
 
     return (
-      <div id="es-tree" className="es-tree">
-        {Array.isArray(options) && (
-          <Branch
-            branchIndex={0}
-            heading={headings[0]}
-            showBranch={this.showBranch}
-            options={options}
-            branches={branches}
-            addToBranch={this.addToBranch}
-            createBranchheading={this.createBranchheading}
-            removeFromBranch={this.removeFromBranch}
+      <>
+        <span>
+          <input
+            type="checkbox"
+            name="keyEdit"
+            value={keyEdit}
+            onChange={this.toggleEditKeys}
           />
-        )}
-        {Array.isArray(options) &&
-          branches.length > 0 &&
-          branches.map((branch, index) => (
+          Edit keys
+        </span>
+        <div id="es-tree" className="es-tree">
+          {Array.isArray(options) && (
             <Branch
-              removeFromBranch={this.removeFromBranch}
-              addToBranch={this.addToBranch}
-              key={branch.id}
-              heading={headings[index + 1]}
-              branches={branches}
-              createBranchheading={this.createBranchheading}
+              branchIndex={0}
+              keyEdit={keyEdit}
+              heading={headings[0]}
               showBranch={this.showBranch}
-              options={branch.values || []}
-              branchIndex={index + 1}
+              options={options}
+              branches={branches}
+              addToBranch={this.addToBranch}
+              createBranchheading={this.createBranchheading}
+              removeFromBranch={this.removeFromBranch}
             />
-          ))}
-      </div>
+          )}
+          {Array.isArray(options) &&
+            branches.length > 0 &&
+            branches.map((branch, index) => (
+              <Branch
+                removeFromBranch={this.removeFromBranch}
+                addToBranch={this.addToBranch}
+                key={branch.id}
+                keyEdit={keyEdit}
+                heading={headings[index + 1]}
+                branches={branches}
+                createBranchheading={this.createBranchheading}
+                showBranch={this.showBranch}
+                options={branch.values || []}
+                branchIndex={index + 1}
+              />
+            ))}
+        </div>
+      </>
     );
   }
 }

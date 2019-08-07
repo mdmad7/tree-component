@@ -4,7 +4,7 @@ import Leaf from "./Leaf";
 class Branch extends Component {
   state = {
     branchValue: "",
-    branchHeading: undefined,
+    branchHeading: (this.props.heading || "").title || undefined,
     branchTextAreaValue: undefined
   };
 
@@ -115,7 +115,8 @@ class Branch extends Component {
       showBranch,
       addToBranch,
       removeFromBranch,
-      heading
+      heading,
+      keyEdit
     } = this.props;
 
     return (
@@ -136,6 +137,7 @@ class Branch extends Component {
             {options.map(option => (
               <Leaf
                 key={option.id}
+                keyEdit={keyEdit}
                 showBranch={showBranch}
                 branches={branches}
                 addToBranch={addToBranch}
