@@ -68,7 +68,7 @@ class Leaf extends Component {
   };
 
   render() {
-    const { branchIndex, option, showBranch, branches, keyEdit } = this.props;
+    const { branchIndex, option, showBranch, branches } = this.props;
     const { leafValue, confirm } = this.state;
     return (
       <div

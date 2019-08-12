@@ -8,6 +8,10 @@ class Branch extends Component {
     branchTextAreaValue: undefined
   };
 
+  componentDidMount() {
+    console.log("I mounted");
+  }
+
   handleInputChange = e => {
     if (e.target.name === "branchValue") {
       this.setState({
@@ -159,6 +163,7 @@ class Branch extends Component {
               <input
                 className="es-leaf_input"
                 name="branchValue"
+                placeholder="Type a value here"
                 type="text"
                 value={branchValue}
                 onChange={this.handleInputChange}

@@ -232,17 +232,19 @@ class App extends Component {
   };
 
   toggleEditKeys = e => {
+    console.log("toggle");
     this.setState({
       keyEdit: e.target.checked
     });
+    this.forceUpdate();
   };
 
   render() {
-    const { options, branches, headings, keyEdit } = this.state;
+    const { options, branches, headings, keyEdit, loading } = this.state;
 
     return (
       <>
-        <span>
+        {/* <span>
           <input
             type="checkbox"
             name="keyEdit"
@@ -250,8 +252,16 @@ class App extends Component {
             onChange={this.toggleEditKeys}
           />
           Edit keys
-        </span>
+        </span> */}
         <div id="es-tree" className="es-tree">
+          {loading && (
+            <div className="es-tree-loader">
+              <div>
+                <div className="loader" />
+                <p>Loading...</p>
+              </div>
+            </div>
+          )}
           {Array.isArray(options) && (
             <Branch
               branchIndex={0}
@@ -265,8 +275,7 @@ class App extends Component {
               removeFromBranch={this.removeFromBranch}
             />
           )}
-          {Array.isArray(options) &&
-            branches.length > 0 &&
+          {Array.isArray(options) && branches.length > 0 ? (
             branches.map((branch, index) => (
               <Branch
                 removeFromBranch={this.removeFromBranch}
@@ -280,7 +289,21 @@ class App extends Component {
                 options={branch.values || []}
                 branchIndex={index + 1}
               />
-            ))}
+            ))
+          ) : (
+            <div className="es-tree--empty-instructions">
+              <div>
+                <p>
+                  Create your list of items by typing into the input field in
+                  the bottom left corner
+                </p>
+                <p>
+                  of this widget. To enter multiple lines of text click the "SW"
+                  button
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </>
     );
